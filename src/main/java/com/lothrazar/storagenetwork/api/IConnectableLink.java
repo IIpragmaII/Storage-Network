@@ -1,6 +1,8 @@
 package com.lothrazar.storagenetwork.api;
 
 import java.util.List;
+import java.util.Set;
+
 import net.minecraft.world.item.ItemStack;
 
 /**
@@ -80,4 +82,8 @@ public interface IConnectableLink {
   void setPriority(int value);
 
   void setFilter(int value, ItemStack copy);
+
+  Set<Integer> getMatchingStacks(IItemStackMatcher matcher, boolean simulate);
+
+  public ItemStack extractFromSlot(int slot, int amount);
 }

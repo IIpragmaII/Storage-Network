@@ -302,6 +302,19 @@ public class NetworkModule {
     return ItemHandlerHelper.copyStackWithSize(usedMatcher.getStack(), alreadyTransferred);
   }
 
+  public void executeRequestBatch(RequestBatch batch, boolean simulate) {
+    for (IItemStackMatcher matcher : batch.getMatchers()) {
+      for (IConnectableLink storage : getSortedConnectableStorage()) {
+        Set<Integer> matchingStacks = storage.getMatchingStacks(matcher, simulate);
+        if (matchingStacks.size() > 0) {
+          for (Integer slot : matchingStacks) {
+            batch.extractStacks(storage, slot, matcher);
+          }
+        }
+      }
+    }
+  }
+
   /**
    * TODO: move or refactor?
    */

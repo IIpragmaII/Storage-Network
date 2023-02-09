@@ -30,6 +30,16 @@ public class CapabilityConnectableAutoIO implements INBTSerializable<CompoundTag
   public static final int DEFAULT_ITEMS_PER = 4;
   public static final int IO_DEFAULT_SPEED = 30; // TODO CONFIG
 
+  private int amtToRequest = 0;
+
+  public int getAmtToRequest() {
+    return amtToRequest;
+  }
+
+  public void setAmtToRequest(int amtToRequest) {
+    this.amtToRequest = amtToRequest;
+  }
+
   public static class Factory implements Callable<IConnectableItemAutoIO> {
 
     @Override
@@ -364,4 +374,9 @@ public class CapabilityConnectableAutoIO implements INBTSerializable<CompoundTag
   public UpgradesItemStackHandler getUpgrades() {
     return upgrades;
   }
+
+  public void extractFromSlot(int slot){
+    
+  }
+
 }
