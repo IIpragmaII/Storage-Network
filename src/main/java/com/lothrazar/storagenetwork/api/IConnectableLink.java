@@ -83,7 +83,7 @@ public interface IConnectableLink {
 
   void setFilter(int value, ItemStack copy);
 
-  Set<Integer> getMatchingStacks(IItemStackMatcher matcher, boolean simulate);
+  Set<Integer> getMatchingStacks(IItemStackMatcher matcher);
 
   public ItemStack extractFromSlot(int slot, int amount);
 }

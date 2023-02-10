@@ -184,7 +184,7 @@ public class CapabilityConnectableLink implements IConnectableLink, INBTSerializ
     return firstMatchedStack;
   }
 
-  public Set<Integer> getMatchingStacks(IItemStackMatcher matcher, boolean simulate) {
+  public Set<Integer> getMatchingStacks(IItemStackMatcher matcher) {
     // If this storage is configured to only export from the network, do not
     // extract from the storage, but abort immediately.
     if (filterDirection == EnumStorageDirection.IN) {

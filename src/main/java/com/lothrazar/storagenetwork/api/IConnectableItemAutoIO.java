@@ -16,10 +16,6 @@ import net.minecraftforge.items.IItemHandler;
  */
 public interface IConnectableItemAutoIO {
 
-  int getAmtToRequest();
-
-  void setAmtToRequest(int amtToRequest);
-
   void toggleNeedsRedstone();
 
   boolean needsRedstone();

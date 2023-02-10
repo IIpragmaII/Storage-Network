@@ -7,7 +7,6 @@ import com.lothrazar.storagenetwork.api.DimPos;
 import com.lothrazar.storagenetwork.api.EnumStorageDirection;
 import com.lothrazar.storagenetwork.api.IConnectable;
 import com.lothrazar.storagenetwork.api.IConnectableItemAutoIO;
-import com.lothrazar.storagenetwork.api.IConnectableLink;
 import com.lothrazar.storagenetwork.api.IItemStackMatcher;
 import com.lothrazar.storagenetwork.capability.handler.ItemStackMatcher;
 import com.lothrazar.storagenetwork.registry.SsnRegistry;
@@ -70,8 +69,8 @@ public class TileMain extends BlockEntity {
     return result;
   }
 
-  public void executeRequestBatch(RequestBatch batch, boolean simulate) {
-    nw.executeRequestBatch(batch, simulate);
+  public void executeRequestBatch(RequestBatch batch) {
+    nw.executeRequestBatch(batch);
   }
 
   private DimPos getDimPos() {
@@ -216,8 +215,9 @@ public class TileMain extends BlockEntity {
         if (matcher.getStack().isEmpty()) {
           continue;
         }
+
+        Request request = new Request(storage);
         // default amt to request. can be overriden by other upgrades
-        storage.setAmtToRequest(storage.getTransferRate());
         // check operations upgrade for export
         boolean stockMode = storage.isStockMode();
         if (stockMode) {
@@ -236,37 +236,19 @@ public class TileMain extends BlockEntity {
               StorageNetworkMod.log("stockMode continnue; canc");
               continue;
             }
-            storage.setAmtToRequest(Math.min(stillNeeds, storage.getAmtToRequest()));
-            StorageNetworkMod.log("updateExports stock mode edited value: amtToRequest = " + storage.getAmtToRequest());
+            request.setCount(Math.min(stillNeeds, request.getCount()));
+            StorageNetworkMod.log("updateExports stock mode edited value: amtToRequest = " + request.getCount());
           } catch (Throwable e) {
             StorageNetworkMod.LOGGER.error("Error thrown from a connected block" + e);
           }
         }
-        if (matcher.getStack().isEmpty() || storage.getAmtToRequest() == 0) {
+        if (matcher.getStack().isEmpty() || request.getCount() == 0) {
           // either the thing is empty or we are requesting none
           continue;
         }
-        requstBatch.add(matcher, (IConnectableLink providerStorage, Integer slot) -> {
-          ItemStack stack = providerStorage.extractFromSlot(slot, storage.getAmtToRequest());
-
-          if (stack.isEmpty()) {
-            return false;
-          }
-
-          ItemStack insertedStack = storage.insertStack(stack, false);
-          // Determine the amount of items moved in the stack
-          int movedItems = stack.getCount() - insertedStack.getCount();
-          if (movedItems <= 0) {
-            return false;
-          }
-          stack.setCount(movedItems);
-          if (stack.isEmpty()) {
-            return false;
-          }
-          return true;
-        });
+        requstBatch.add(matcher, request);
       }
-      executeRequestBatch(requstBatch, false);
+      executeRequestBatch(requstBatch);
     }
   }
 
