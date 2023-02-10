@@ -5,17 +5,17 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
-import java.util.function.BiConsumer;
+import java.util.function.BiFunction;
 
 import com.lothrazar.storagenetwork.api.IConnectableLink;
 import com.lothrazar.storagenetwork.api.IItemStackMatcher;
 
 public class RequestBatch {
-    private Map<IItemStackMatcher, List<BiConsumer<IConnectableLink, Integer>>> batch = new HashMap<IItemStackMatcher, List<BiConsumer<IConnectableLink, Integer>>>();
+    private Map<IItemStackMatcher, List<BiFunction<IConnectableLink, Integer, Boolean>>> batch = new HashMap<IItemStackMatcher, List<BiFunction<IConnectableLink, Integer, Boolean>>>();
 
-    public void add(IItemStackMatcher matcher, BiConsumer<IConnectableLink, Integer> extractor) {
+    public void add(IItemStackMatcher matcher, BiFunction<IConnectableLink, Integer, Boolean> extractor) {
         if (!batch.containsKey(matcher)) {
-            batch.put(matcher, new ArrayList<BiConsumer<IConnectableLink, Integer>>());
+            batch.put(matcher, new ArrayList<BiFunction<IConnectableLink, Integer, Boolean>>());
         }
         batch.get(matcher).add(extractor);
     }
@@ -25,10 +25,14 @@ public class RequestBatch {
     }
 
     public boolean extractStacks(IConnectableLink providerStorage, Integer slot, IItemStackMatcher matcher) {
-        List<BiConsumer<IConnectableLink, Integer>> extractors = batch.get(matcher);
-        for (BiConsumer<IConnectableLink, Integer> extractor : extractors) {
-            extractor.accept(providerStorage, slot);
+        List<BiFunction<IConnectableLink, Integer, Boolean>> extractors = batch.get(matcher);
+        List<BiFunction<IConnectableLink, Integer, Boolean>> remainingExtractors = new ArrayList<BiFunction<IConnectableLink, Integer, Boolean>>();
+        for (BiFunction<IConnectableLink, Integer, Boolean> extractor : extractors) {
+            if (!extractor.apply(providerStorage, slot)) {
+                remainingExtractors.add(extractor);
+            }
         }
+        batch.put(matcher, remainingExtractors);
         return true;
     }
 

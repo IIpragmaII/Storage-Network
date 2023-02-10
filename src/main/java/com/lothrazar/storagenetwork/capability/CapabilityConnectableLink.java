@@ -318,6 +318,6 @@ public class CapabilityConnectableLink implements IConnectableLink, INBTSerializ
     if (itemHandler == null) {
       return ItemStack.EMPTY;
     }
-    return itemHandler.extractItem(slot, amount, true);
+    return itemHandler.extractItem(slot, amount, false);
   }
 }

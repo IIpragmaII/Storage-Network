@@ -247,32 +247,23 @@ public class TileMain extends BlockEntity {
           continue;
         }
         requstBatch.add(matcher, (IConnectableLink providerStorage, Integer slot) -> {
-          // StorageNetwork.log("updateExports: found requestedStack = " +
-          // requestedStack);
-          // The stack is available in the network, let's simulate inserting it into the
-          // storage
-
           ItemStack stack = providerStorage.extractFromSlot(slot, storage.getAmtToRequest());
 
-          if (stack == ItemStack.EMPTY) {
-            return;
+          if (stack.isEmpty()) {
+            return false;
           }
-          ItemStack insertedSim = storage.insertStack(stack, true);
+
+          ItemStack insertedStack = storage.insertStack(stack, false);
           // Determine the amount of items moved in the stack
-          if (!insertedSim.isEmpty()) {
-            int movedItems = stack.getCount() - insertedSim.getCount();
-            if (movedItems <= 0) {
-              return;
-            }
-            stack.setCount(movedItems);
+          int movedItems = stack.getCount() - insertedStack.getCount();
+          if (movedItems <= 0) {
+            return false;
           }
-          // Alright, some items got moved in the simulation. Let's do it for real this
-          // time.
-          ItemStack realExtractedStack = request(new ItemStackMatcher(stack, false, true), stack.getCount(), false);
-          if (realExtractedStack.isEmpty()) {
-            return;
+          stack.setCount(movedItems);
+          if (stack.isEmpty()) {
+            return false;
           }
-          storage.insertStack(realExtractedStack, false);
+          return true;
         });
       }
       executeRequestBatch(requstBatch, false);
