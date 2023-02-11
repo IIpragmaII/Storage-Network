@@ -4,6 +4,8 @@ import java.util.Collections;
 import java.util.List;
 import com.lothrazar.storagenetwork.block.main.TileMain;
 import com.lothrazar.storagenetwork.capability.handler.FilterItemStackHandler;
+import com.lothrazar.storagenetwork.capability.handler.ItemStackMatcher;
+
 import net.minecraft.core.Direction;
 import net.minecraft.world.item.ItemStack;
 import net.minecraftforge.items.IItemHandler;

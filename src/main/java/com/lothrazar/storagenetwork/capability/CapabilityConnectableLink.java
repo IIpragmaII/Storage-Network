@@ -184,7 +184,7 @@ public class CapabilityConnectableLink implements IConnectableLink, INBTSerializ
     return firstMatchedStack;
   }
 
-  public Set<Integer> getMatchingStacks(IItemStackMatcher matcher) {
+  public Set<Integer> getMatchingStacks(CompoundTag tag) {
     // If this storage is configured to only export from the network, do not
     // extract from the storage, but abort immediately.
     if (filterDirection == EnumStorageDirection.IN) {
@@ -218,7 +218,7 @@ public class CapabilityConnectableLink implements IConnectableLink, INBTSerializ
         continue;
       }
       // If its not even the item type we're looking for -> continue
-      if (!matcher.match(stack)) {
+      if (stack.getTag() != null && !stack.getTag().equals(tag)) {
         continue;
       }
       matchingStacks.add(slot);

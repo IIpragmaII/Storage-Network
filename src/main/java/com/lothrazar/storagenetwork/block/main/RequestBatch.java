@@ -6,38 +6,40 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import com.lothrazar.storagenetwork.api.IConnectable;
 import com.lothrazar.storagenetwork.api.IConnectableLink;
 import com.lothrazar.storagenetwork.api.IItemStackMatcher;
 
+import net.minecraft.nbt.CompoundTag;
 import net.minecraft.world.item.ItemStack;
 
 public class RequestBatch {
-    private Map<IItemStackMatcher, List<Request>> batch = new HashMap<IItemStackMatcher, List<Request>>();
+    private Map<CompoundTag, List<IConnectable>> batch = new HashMap<CompoundTag, List<IConnectable>>();
 
-    public void add(IItemStackMatcher matcher, Request request) {
-        if (!batch.containsKey(matcher)) {
-            batch.put(matcher, new ArrayList<Request>());
+    public void add(CompoundTag tag, IConnectable connectable) {
+        if (!batch.containsKey(tag)) {
+            batch.put(tag, new ArrayList<IConnectable>());
         }
-        batch.get(matcher).add(request);
+        batch.get(tag).add(connectable);
     }
 
-    public Set<IItemStackMatcher> getMatchers() {
+    public Set<CompoundTag> getMatchers() {
         return batch.keySet();
     }
 
-    public void extractStacks(IConnectableLink providerStorage, Integer slot, IItemStackMatcher matcher) {
-        List<Request> requests = batch.get(matcher);
-        List<Request> remainingRequests = new ArrayList<Request>();
-        for (Request request : requests) {
-            ItemStack stack = providerStorage.extractFromSlot(slot, request.getCount());
-            if (!request.insertStack(stack)) {
-                remainingRequests.add(request);
+    public void extractStacks(IConnectableLink providerStorage, Integer slot, CompoundTag tag) {
+        List<IConnectable> connectables = batch.get(tag);
+        List<IConnectable> remainingConnectables = new ArrayList<IConnectable>();
+        for (IConnectable connectable : connectables) {
+            ItemStack stack = providerStorage.extractFromSlot(slot, connectable.getCount());
+            if (!connectable.insertStack(stack)) {
+                remainingConnectables.add(connectable);
             }
             if (stack.isEmpty()) {
                 return;
             }
         }
-        batch.put(matcher, remainingRequests);
+        batch.put(tag, remainingConnectables);
     }
 
 }

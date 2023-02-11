@@ -186,67 +186,30 @@ public class TileMain extends BlockEntity {
     RequestBatch requstBatch = new RequestBatch();
 
     for (IConnectable connectable : conSet) {
-      if (connectable == null || connectable.getPos() == null) {
-        // StorageNetwork.log("null connectable or pos : updateExports() ");
-        continue;
-      }
-      IConnectableItemAutoIO storage = connectable.getPos()
-          .getCapability(StorageNetworkCapabilities.CONNECTABLE_AUTO_IO, null);
-      if (storage == null) {
+      if (!connectable.hasStorage()) {
         continue;
       }
       // We explicitely don't want to check whether this can do BOTH, because we don't
       // want to import what we've just exported in updateExports().
-      if (storage.ioDirection() != EnumStorageDirection.OUT) {
+      if (!connectable.isDirection(EnumStorageDirection.OUT)) {
         continue;
       }
       // Give the storage a chance to have a cooldown
-      if (!storage.runNow(connectable.getPos(), this)) {
+      if (!connectable.runNow(this)) {
         continue;
       }
-      if (storage.needsRedstone()) {
+      if (connectable.needsRedstone()) {
         boolean power = level.hasNeighborSignal(connectable.getPos().getBlockPos());
         if (power == false) {
           // StorageNetwork.log(power + " Export pow here ; needs yes skip me");
           continue;
         }
       }
-      for (IItemStackMatcher matcher : storage.getAutoExportList()) {
+      for (IItemStackMatcher matcher : connectable.getAutoExportList(level)) {
         if (matcher.getStack().isEmpty()) {
           continue;
         }
-
-        Request request = new Request(storage);
-        // default amt to request. can be overriden by other upgrades
-        // check operations upgrade for export
-        boolean stockMode = storage.isStockMode();
-        if (stockMode) {
-          StorageNetworkMod.log("stockMode == TRUE ; updateExports: attempt " + matcher.getStack());
-          // STOCK upgrade means
-          try {
-            BlockEntity tileEntity = level
-                .getBlockEntity(connectable.getPos().getBlockPos().relative(storage.facingInventory()));
-            IItemHandler targetInventory = tileEntity.getCapability(CapabilityItemHandler.ITEM_HANDLER_CAPABILITY, null)
-                .orElse(null);
-            // request with false to see how many even exist in there.
-            int stillNeeds = UtilInventory.containsAtLeastHowManyNeeded(targetInventory, matcher.getStack(),
-                matcher.getStack().getCount());
-            if (stillNeeds == 0) {
-              // they dont need any more, they have the stock they need
-              StorageNetworkMod.log("stockMode continnue; canc");
-              continue;
-            }
-            request.setCount(Math.min(stillNeeds, request.getCount()));
-            StorageNetworkMod.log("updateExports stock mode edited value: amtToRequest = " + request.getCount());
-          } catch (Throwable e) {
-            StorageNetworkMod.LOGGER.error("Error thrown from a connected block" + e);
-          }
-        }
-        if (matcher.getStack().isEmpty() || request.getCount() == 0) {
-          // either the thing is empty or we are requesting none
-          continue;
-        }
-        requstBatch.add(matcher, request);
+        requstBatch.add(matcher.getStack().getTag(), connectable);
       }
       executeRequestBatch(requstBatch);
     }

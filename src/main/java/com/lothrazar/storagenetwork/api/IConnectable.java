@@ -1,7 +1,11 @@
 package com.lothrazar.storagenetwork.api;
 
+import java.util.List;
+
+import com.lothrazar.storagenetwork.block.main.TileMain;
 import com.lothrazar.storagenetwork.capability.handler.FilterItemStackHandler;
 import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.level.Level;
 
 /**
  * All blocks that can connect to the storage-network need to expose this capability. Because of the way the storage-networking is built up, each connectable needs to expose its own position and
@@ -53,4 +57,16 @@ public interface IConnectable {
   void setFilter(int value, ItemStack copy);
 
   FilterItemStackHandler getFilter();
+
+  boolean hasStorage();
+
+  boolean isDirection(EnumStorageDirection direction);
+
+  boolean runNow(TileMain main);
+
+  Boolean insertStack(ItemStack stack);
+
+  List<IItemStackMatcher> getAutoExportList(Level level);
+
+  Integer getCount();
 }

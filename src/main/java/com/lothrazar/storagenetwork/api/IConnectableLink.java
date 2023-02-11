@@ -3,6 +3,7 @@ package com.lothrazar.storagenetwork.api;
 import java.util.List;
 import java.util.Set;
 
+import net.minecraft.nbt.CompoundTag;
 import net.minecraft.world.item.ItemStack;
 
 /**
@@ -83,7 +84,7 @@ public interface IConnectableLink {
 
   void setFilter(int value, ItemStack copy);
 
-  Set<Integer> getMatchingStacks(IItemStackMatcher matcher);
+  Set<Integer> getMatchingStacks(CompoundTag matcher);
 
   public ItemStack extractFromSlot(int slot, int amount);
 }

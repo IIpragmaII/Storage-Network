@@ -22,16 +22,9 @@ public class Request {
     }
 
     public Boolean insertStack(ItemStack stack) {
-        if (stack.isEmpty()) {
-            return false;
-        }
-
         ItemStack insertedStack = storage.insertStack(stack, false);
         // Determine the amount of items moved in the stack
         int movedItems = stack.getCount() - insertedStack.getCount();
-        if (movedItems <= 0) {
-            return false;
-        }
         stack.setCount(movedItems);
         if (stack.isEmpty()) {
             return false;
