@@ -246,10 +246,10 @@ public class TileMain extends BlockEntity {
           // either the thing is empty or we are requesting none
           continue;
         }
-        requstBatch.add(matcher, request);
+        requstBatch.put(matcher, request);
       }
-      executeRequestBatch(requstBatch);
     }
+    executeRequestBatch(requstBatch);
   }
 
   public static void clientTick(Level level, BlockPos blockPos, BlockState blockState, TileMain tile) {}

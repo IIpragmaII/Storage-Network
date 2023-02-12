@@ -303,7 +303,7 @@ public class NetworkModule {
   }
 
   public void executeRequestBatch(RequestBatch batch) {
-    for (IItemStackMatcher matcher : batch.getMatchers()) {
+    for (IItemStackMatcher matcher : batch.keySet()) {
       for (IConnectableLink storage : getSortedConnectableStorage()) {
         Set<Integer> matchingStacks = storage.getMatchingStacks(matcher);
         if (matchingStacks.size() > 0) {

@@ -3,30 +3,52 @@ package com.lothrazar.storagenetwork.block.main;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
-import java.util.Set;
 
 import com.lothrazar.storagenetwork.api.IConnectableLink;
 import com.lothrazar.storagenetwork.api.IItemStackMatcher;
 
 import net.minecraft.world.item.ItemStack;
 
-public class RequestBatch {
-    private Map<IItemStackMatcher, List<Request>> batch = new HashMap<IItemStackMatcher, List<Request>>();
-
-    public void add(IItemStackMatcher matcher, Request request) {
-        if (!batch.containsKey(matcher)) {
-            batch.put(matcher, new ArrayList<Request>());
+public class RequestBatch extends HashMap<IItemStackMatcher, List<Request>> {
+    public IItemStackMatcher getMatchingKey(IItemStackMatcher matcher) {
+        for (IItemStackMatcher mapKey : keySet()) {
+            if (mapKey.match(matcher)) {
+                return mapKey;
+            }
         }
-        batch.get(matcher).add(request);
+        return null;
     }
 
-    public Set<IItemStackMatcher> getMatchers() {
-        return batch.keySet();
+    public List<Request> put(IItemStackMatcher matcher, List<Request> requests) {
+        IItemStackMatcher matchingKey = getMatchingKey(matcher);
+        if (matchingKey != null) {
+            return super.put(matchingKey, requests);
+        }
+        return super.put(matcher, requests);
+    }
+
+    public List<Request> put(IItemStackMatcher matcher, Request request) {
+        IItemStackMatcher matchingKey = getMatchingKey(matcher);
+        if (matchingKey != null) {
+            List<Request> matchingList = super.get(matchingKey);
+            matchingList.add(request);
+            return matchingList;
+        }
+        List<Request> newList = new ArrayList<Request>();
+        newList.add(request);
+        return super.put(matcher, newList);
+    }
+
+    public List<Request> get(IItemStackMatcher matcher) {
+        IItemStackMatcher matchingKey = getMatchingKey(matcher);
+        if (matchingKey != null) {
+            return super.get(matchingKey);
+        }
+        return null;
     }
 
     public void extractStacks(IConnectableLink providerStorage, Integer slot, IItemStackMatcher matcher) {
-        List<Request> requests = batch.get(matcher);
+        List<Request> requests = get(matcher);
         List<Request> remainingRequests = new ArrayList<Request>();
         for (Request request : requests) {
             ItemStack stack = providerStorage.extractFromSlot(slot, request.getCount());
@@ -37,7 +59,6 @@ public class RequestBatch {
                 return;
             }
         }
-        batch.put(matcher, remainingRequests);
+        put(matcher, remainingRequests);
     }
-
 }
