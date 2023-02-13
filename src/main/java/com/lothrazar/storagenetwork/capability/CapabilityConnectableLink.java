@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 
 import com.lothrazar.storagenetwork.StorageNetworkMod;
@@ -12,6 +13,7 @@ import com.lothrazar.storagenetwork.api.EnumStorageDirection;
 import com.lothrazar.storagenetwork.api.IConnectable;
 import com.lothrazar.storagenetwork.api.IConnectableLink;
 import com.lothrazar.storagenetwork.api.IItemStackMatcher;
+import com.lothrazar.storagenetwork.block.main.Provider;
 import com.lothrazar.storagenetwork.capability.handler.FilterItemStackHandler;
 import com.lothrazar.storagenetwork.registry.StorageNetworkCapabilities;
 import net.minecraft.core.Direction;
@@ -320,5 +322,46 @@ public class CapabilityConnectableLink implements IConnectableLink, INBTSerializ
       return ItemStack.EMPTY;
     }
     return itemHandler.extractItem(slot, amount, false);
+  }
+
+  public void addStacksToMap(Map<Item, List<Provider>> availableItems) {
+    // If this storage is configured to only export from the network, do not
+    // extract from the storage, but abort immediately.
+    if (filterDirection == EnumStorageDirection.IN) {
+      return;
+    }
+    if (inventoryFace == null) {
+      return;
+    }
+    DimPos inventoryPos = connectable.getPos().offset(inventoryFace);
+    // Test whether the connected block has the IItemHandler capability
+    IItemHandler itemHandler = inventoryPos.getCapability(CapabilityItemHandler.ITEM_HANDLER_CAPABILITY,
+        inventoryFace.getOpposite());
+    if (itemHandler == null) {
+      return;
+    }
+    // if (itemHandler instanceof ExchangeItemStackHandler) {
+    // StorageNetwork.log("cannot loop back a network extract into
+    // ExchangeItemStackHandler");
+    // return ItemStack.EMPTY;
+    // }
+    for (int slot = 0; slot < itemHandler.getSlots(); slot++) {
+      // force simulate: allow them to not let me see the stack, also dont extract
+      // since it might steal/dupe
+      ItemStack stack = itemHandler.extractItem(slot, 1, true);
+      if (stack == null || stack.isEmpty()) {
+        continue;
+      }
+      // Ignore stacks that are filtered
+      if (filters.isStackFiltered(stack)) {
+        continue;
+      }
+      Provider provider = new Provider(this, slot);
+      List<Provider> currentList = availableItems.get(stack.getItem());
+      if (currentList == null) {
+        availableItems.put(stack.getItem(), new ArrayList<Provider>());
+      }
+      availableItems.get(stack.getItem()).add(provider);
+    }
   }
 }
