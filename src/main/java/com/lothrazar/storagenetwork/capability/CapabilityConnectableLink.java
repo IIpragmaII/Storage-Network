@@ -16,6 +16,7 @@ import com.lothrazar.storagenetwork.capability.handler.FilterItemStackHandler;
 import com.lothrazar.storagenetwork.registry.StorageNetworkCapabilities;
 import net.minecraft.core.Direction;
 import net.minecraft.nbt.CompoundTag;
+import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraftforge.common.util.INBTSerializable;
@@ -184,7 +185,7 @@ public class CapabilityConnectableLink implements IConnectableLink, INBTSerializ
     return firstMatchedStack;
   }
 
-  public Set<Integer> getMatchingStacks(IItemStackMatcher matcher) {
+  public Set<Integer> getMatchingStacks(Item item) {
     // If this storage is configured to only export from the network, do not
     // extract from the storage, but abort immediately.
     if (filterDirection == EnumStorageDirection.IN) {
@@ -218,7 +219,7 @@ public class CapabilityConnectableLink implements IConnectableLink, INBTSerializ
         continue;
       }
       // If its not even the item type we're looking for -> continue
-      if (!matcher.match(stack)) {
+      if (stack.getItem() != item) {
         continue;
       }
       matchingStacks.add(slot);

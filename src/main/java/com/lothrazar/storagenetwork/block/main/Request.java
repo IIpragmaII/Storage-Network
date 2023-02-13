@@ -5,7 +5,7 @@ import com.lothrazar.storagenetwork.api.IConnectableItemAutoIO;
 import net.minecraft.world.item.ItemStack;
 
 public class Request {
-    private Integer count;
+    private Integer count = 0;
     private IConnectableItemAutoIO storage;
 
     public Request(IConnectableItemAutoIO storage) {
@@ -32,6 +32,7 @@ public class Request {
         if (movedItems <= 0) {
             return false;
         }
+        setCount(movedItems);
         stack.setCount(movedItems);
         if (stack.isEmpty()) {
             return false;

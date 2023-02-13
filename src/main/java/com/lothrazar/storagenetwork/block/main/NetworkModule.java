@@ -25,6 +25,7 @@ import com.lothrazar.storagenetwork.util.UtilInventory;
 import com.lothrazar.storagenetwork.util.UtilTileEntity;
 import net.minecraft.core.Direction;
 import net.minecraft.network.chat.TranslatableComponent;
+import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.entity.BlockEntity;
@@ -303,12 +304,12 @@ public class NetworkModule {
   }
 
   public void executeRequestBatch(RequestBatch batch) {
-    for (IItemStackMatcher matcher : batch.keySet()) {
+    for (Item item : batch.keySet()) {
       for (IConnectableLink storage : getSortedConnectableStorage()) {
-        Set<Integer> matchingStacks = storage.getMatchingStacks(matcher);
+        Set<Integer> matchingStacks = storage.getMatchingStacks(item);
         if (matchingStacks.size() > 0) {
           for (Integer slot : matchingStacks) {
-            batch.extractStacks(storage, slot, matcher);
+            batch.extractStacks(storage, slot, item);
           }
         }
       }

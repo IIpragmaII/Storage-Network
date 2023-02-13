@@ -246,7 +246,7 @@ public class TileMain extends BlockEntity {
           // either the thing is empty or we are requesting none
           continue;
         }
-        requstBatch.put(matcher, request);
+        requstBatch.put(matcher.getStack().getItem(), request);
       }
     }
     executeRequestBatch(requstBatch);
