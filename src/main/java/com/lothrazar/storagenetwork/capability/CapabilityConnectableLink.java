@@ -2,9 +2,7 @@ package com.lothrazar.storagenetwork.capability;
 
 import java.util.ArrayList;
 import java.util.Collections;
-import java.util.HashSet;
 import java.util.List;
-import java.util.Set;
 
 import com.lothrazar.storagenetwork.StorageNetworkMod;
 import com.lothrazar.storagenetwork.api.DimPos;
@@ -19,7 +17,6 @@ import com.lothrazar.storagenetwork.util.StackProviderBatch;
 
 import net.minecraft.core.Direction;
 import net.minecraft.nbt.CompoundTag;
-import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraftforge.common.util.INBTSerializable;
@@ -188,48 +185,6 @@ public class CapabilityConnectableLink implements IConnectableLink, INBTSerializ
     return firstMatchedStack;
   }
 
-  public Set<Integer> getMatchingStacks(Item item) {
-    // If this storage is configured to only export from the network, do not
-    // extract from the storage, but abort immediately.
-    if (filterDirection == EnumStorageDirection.IN) {
-      return new HashSet<Integer>();
-    }
-    if (inventoryFace == null) {
-      return new HashSet<Integer>();
-    }
-    DimPos inventoryPos = connectable.getPos().offset(inventoryFace);
-    // Test whether the connected block has the IItemHandler capability
-    IItemHandler itemHandler = inventoryPos.getCapability(CapabilityItemHandler.ITEM_HANDLER_CAPABILITY,
-        inventoryFace.getOpposite());
-    if (itemHandler == null) {
-      return new HashSet<Integer>();
-    }
-    // if (itemHandler instanceof ExchangeItemStackHandler) {
-    // StorageNetwork.log("cannot loop back a network extract into
-    // ExchangeItemStackHandler");
-    // return ItemStack.EMPTY;
-    // }
-    Set<Integer> matchingStacks = new HashSet<Integer>();
-    for (int slot = 0; slot < itemHandler.getSlots(); slot++) {
-      // force simulate: allow them to not let me see the stack, also dont extract
-      // since it might steal/dupe
-      ItemStack stack = itemHandler.extractItem(slot, 1, true);
-      if (stack == null || stack.isEmpty()) {
-        continue;
-      }
-      // Ignore stacks that are filtered
-      if (filters.isStackFiltered(stack)) {
-        continue;
-      }
-      // If its not even the item type we're looking for -> continue
-      if (stack.getItem() != item) {
-        continue;
-      }
-      matchingStacks.add(slot);
-    }
-    return matchingStacks;
-  }
-
   @Override
   public int getEmptySlots() {
     // If this storage is configured to only import into the network, do not
@@ -325,7 +280,7 @@ public class CapabilityConnectableLink implements IConnectableLink, INBTSerializ
     return itemHandler.extractItem(slot, amount, false);
   }
 
-  public void addStacksToMap(StackProviderBatch availableItems) {
+  public void addToStackProviderBatch(StackProviderBatch availableItems) {
     // If this storage is configured to only export from the network, do not
     // extract from the storage, but abort immediately.
     if (filterDirection == EnumStorageDirection.IN) {

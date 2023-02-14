@@ -309,7 +309,7 @@ public class NetworkModule {
   public void executeRequestBatch(RequestBatch batch) {
     StackProviderBatch availableItems = new StackProviderBatch();
     for (IConnectableLink storage : getSortedConnectableStorage()) {
-      storage.addStacksToMap(availableItems);
+      storage.addToStackProviderBatch(availableItems);
     }
 
     for (Item item : batch.keySet()) {
