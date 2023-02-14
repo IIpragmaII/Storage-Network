@@ -4,7 +4,6 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
-import java.util.Map;
 import java.util.Set;
 
 import com.lothrazar.storagenetwork.StorageNetworkMod;
@@ -16,6 +15,8 @@ import com.lothrazar.storagenetwork.api.IItemStackMatcher;
 import com.lothrazar.storagenetwork.block.main.Provider;
 import com.lothrazar.storagenetwork.capability.handler.FilterItemStackHandler;
 import com.lothrazar.storagenetwork.registry.StorageNetworkCapabilities;
+import com.lothrazar.storagenetwork.util.ProviderBatch;
+
 import net.minecraft.core.Direction;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.world.item.Item;
@@ -324,7 +325,7 @@ public class CapabilityConnectableLink implements IConnectableLink, INBTSerializ
     return itemHandler.extractItem(slot, amount, false);
   }
 
-  public void addStacksToMap(Map<Item, List<Provider>> availableItems) {
+  public void addStacksToMap(ProviderBatch availableItems) {
     // If this storage is configured to only export from the network, do not
     // extract from the storage, but abort immediately.
     if (filterDirection == EnumStorageDirection.IN) {
@@ -357,11 +358,7 @@ public class CapabilityConnectableLink implements IConnectableLink, INBTSerializ
         continue;
       }
       Provider provider = new Provider(this, slot);
-      List<Provider> currentList = availableItems.get(stack.getItem());
-      if (currentList == null) {
-        availableItems.put(stack.getItem(), new ArrayList<Provider>());
-      }
-      availableItems.get(stack.getItem()).add(provider);
+      availableItems.put(stack.getItem(), provider);
     }
   }
 }

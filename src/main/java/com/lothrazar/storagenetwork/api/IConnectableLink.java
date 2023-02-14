@@ -1,10 +1,9 @@
 package com.lothrazar.storagenetwork.api;
 
 import java.util.List;
-import java.util.Map;
 import java.util.Set;
 
-import com.lothrazar.storagenetwork.block.main.Provider;
+import com.lothrazar.storagenetwork.util.ProviderBatch;
 
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
@@ -91,5 +90,5 @@ public interface IConnectableLink {
 
   public ItemStack extractFromSlot(int slot, int amount);
 
-  void addStacksToMap(Map<Item, List<Provider>> availableItems);
+  void addStacksToMap(ProviderBatch availableItems);
 }

@@ -21,6 +21,7 @@ import com.lothrazar.storagenetwork.api.IConnectableLink;
 import com.lothrazar.storagenetwork.api.IItemStackMatcher;
 import com.lothrazar.storagenetwork.capability.handler.ItemStackMatcher;
 import com.lothrazar.storagenetwork.registry.StorageNetworkCapabilities;
+import com.lothrazar.storagenetwork.util.ProviderBatch;
 import com.lothrazar.storagenetwork.util.UtilInventory;
 import com.lothrazar.storagenetwork.util.UtilTileEntity;
 import net.minecraft.core.Direction;
@@ -304,7 +305,7 @@ public class NetworkModule {
   }
 
   public void executeRequestBatch(RequestBatch batch) {
-    Map<Item, List<Provider>> availableItems = new HashMap<Item, List<Provider>>();
+    ProviderBatch availableItems = new ProviderBatch();
     for (IConnectableLink storage : getSortedConnectableStorage()) {
       storage.addStacksToMap(availableItems);
     }
