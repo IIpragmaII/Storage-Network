@@ -11,6 +11,8 @@ import com.lothrazar.storagenetwork.api.IItemStackMatcher;
 import com.lothrazar.storagenetwork.capability.handler.ItemStackMatcher;
 import com.lothrazar.storagenetwork.registry.SsnRegistry;
 import com.lothrazar.storagenetwork.registry.StorageNetworkCapabilities;
+import com.lothrazar.storagenetwork.util.Request;
+import com.lothrazar.storagenetwork.util.RequestBatch;
 import com.lothrazar.storagenetwork.util.UtilInventory;
 import net.minecraft.core.BlockPos;
 import net.minecraft.nbt.CompoundTag;

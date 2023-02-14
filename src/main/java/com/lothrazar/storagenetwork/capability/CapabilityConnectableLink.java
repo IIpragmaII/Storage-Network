@@ -12,10 +12,10 @@ import com.lothrazar.storagenetwork.api.EnumStorageDirection;
 import com.lothrazar.storagenetwork.api.IConnectable;
 import com.lothrazar.storagenetwork.api.IConnectableLink;
 import com.lothrazar.storagenetwork.api.IItemStackMatcher;
-import com.lothrazar.storagenetwork.block.main.Provider;
 import com.lothrazar.storagenetwork.capability.handler.FilterItemStackHandler;
 import com.lothrazar.storagenetwork.registry.StorageNetworkCapabilities;
-import com.lothrazar.storagenetwork.util.ProviderBatch;
+import com.lothrazar.storagenetwork.util.StackProvider;
+import com.lothrazar.storagenetwork.util.StackProviderBatch;
 
 import net.minecraft.core.Direction;
 import net.minecraft.nbt.CompoundTag;
@@ -325,7 +325,7 @@ public class CapabilityConnectableLink implements IConnectableLink, INBTSerializ
     return itemHandler.extractItem(slot, amount, false);
   }
 
-  public void addStacksToMap(ProviderBatch availableItems) {
+  public void addStacksToMap(StackProviderBatch availableItems) {
     // If this storage is configured to only export from the network, do not
     // extract from the storage, but abort immediately.
     if (filterDirection == EnumStorageDirection.IN) {
@@ -357,7 +357,7 @@ public class CapabilityConnectableLink implements IConnectableLink, INBTSerializ
       if (filters.isStackFiltered(stack)) {
         continue;
       }
-      Provider provider = new Provider(this, slot);
+      StackProvider provider = new StackProvider(this, slot);
       availableItems.put(stack.getItem(), provider);
     }
   }

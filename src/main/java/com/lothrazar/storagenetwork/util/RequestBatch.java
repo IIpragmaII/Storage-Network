@@ -1,15 +1,14 @@
-package com.lothrazar.storagenetwork.block.main;
+package com.lothrazar.storagenetwork.util;
 
 import java.util.ArrayList;
 import java.util.List;
 
 import com.lothrazar.storagenetwork.api.IConnectableLink;
-import com.lothrazar.storagenetwork.util.ItemMap;
 
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 
-public class RequestBatch extends ItemMap<Request> {
+public class RequestBatch extends Batch<Request> {
     public void extractStacks(IConnectableLink providerStorage, Integer slot, Item item) {
         List<Request> requests = get(item);
         List<Request> remainingRequests = new ArrayList<Request>();

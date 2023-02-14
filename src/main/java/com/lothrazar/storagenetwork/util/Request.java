@@ -1,4 +1,4 @@
-package com.lothrazar.storagenetwork.block.main;
+package com.lothrazar.storagenetwork.util;
 
 import com.lothrazar.storagenetwork.api.IConnectableItemAutoIO;
 

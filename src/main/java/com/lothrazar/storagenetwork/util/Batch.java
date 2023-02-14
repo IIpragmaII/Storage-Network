@@ -6,7 +6,7 @@ import java.util.List;
 
 import net.minecraft.world.item.Item;
 
-public class ItemMap<K> extends HashMap<Item, List<K>> {
+public class Batch<K> extends HashMap<Item, List<K>> {
     public List<K> put(Item item, K object) {
         if (containsKey(item)) {
             List<K> matchingList = super.get(item);
