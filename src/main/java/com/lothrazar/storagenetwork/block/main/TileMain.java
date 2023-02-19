@@ -222,14 +222,15 @@ public class TileMain extends BlockEntity {
         // default amt to request. can be overriden by other upgrades
         // check operations upgrade for export
         boolean stockMode = storage.isStockMode();
-        if (stockMode) {
-          StorageNetworkMod.log("stockMode == TRUE ; updateExports: attempt " + matcher.getStack());
-          // STOCK upgrade means
-          try {
-            BlockEntity tileEntity = level
-                .getBlockEntity(connectable.getPos().getBlockPos().relative(storage.facingInventory()));
-            IItemHandler targetInventory = tileEntity.getCapability(CapabilityItemHandler.ITEM_HANDLER_CAPABILITY, null)
-                .orElse(null);
+        try {
+          BlockEntity tileEntity = level
+              .getBlockEntity(connectable.getPos().getBlockPos().relative(storage.facingInventory()));
+          IItemHandler targetInventory = tileEntity.getCapability(CapabilityItemHandler.ITEM_HANDLER_CAPABILITY, null)
+              .orElse(null);
+          if (stockMode) {
+            StorageNetworkMod.log("stockMode == TRUE ; updateExports: attempt " + matcher.getStack());
+            // STOCK upgrade means
+
             // request with false to see how many even exist in there.
             int stillNeeds = UtilInventory.containsAtLeastHowManyNeeded(targetInventory, matcher.getStack(),
                 matcher.getStack().getCount());
@@ -240,9 +241,16 @@ public class TileMain extends BlockEntity {
             }
             request.setCount(Math.min(stillNeeds, request.getCount()));
             StorageNetworkMod.log("updateExports stock mode edited value: amtToRequest = " + request.getCount());
-          } catch (Throwable e) {
-            StorageNetworkMod.LOGGER.error("Error thrown from a connected block" + e);
+          } else {
+            int availableSlots = UtilInventory.getAvailableSlots(targetInventory, matcher.getStack(),
+                request.getCount());
+            if (availableSlots <= 0) {
+              continue;
+            }
+            request.setCount(availableSlots);
           }
+        } catch (Throwable e) {
+          StorageNetworkMod.LOGGER.error("Error thrown from a connected block" + e);
         }
         if (matcher.getStack().isEmpty() || request.getCount() == 0) {
           // either the thing is empty or we are requesting none

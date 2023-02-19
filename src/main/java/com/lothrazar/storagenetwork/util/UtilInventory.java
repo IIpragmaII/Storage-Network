@@ -117,6 +117,26 @@ public class UtilInventory {
     return minimumCount - found;
   }
 
+  public static int getAvailableSlots(IItemHandler inv, ItemStack stackIn, int requestedSlots) {
+    int availableSlots = 0;
+    for (int i = 0; i < inv.getSlots(); i++) {
+      ItemStack stackInSlot = inv.getStackInSlot(i);
+      if (stackInSlot.isEmpty()) {
+        availableSlots += inv.getSlotLimit(i);
+        if (availableSlots >= requestedSlots) {
+          return requestedSlots;
+        }
+      }
+      if (ItemHandlerHelper.canItemStacksStack(stackInSlot, stackIn)) {
+        availableSlots += stackInSlot.getMaxStackSize() - stackInSlot.getCount();
+        if (availableSlots >= requestedSlots) {
+          return requestedSlots;
+        }
+      }
+    }
+    return availableSlots;
+  }
+
   public static ItemStack extractItem(IItemHandler inv, ItemStackMatcher fil, int num, boolean simulate) {
     if (inv == null || fil == null) {
       return ItemStack.EMPTY;
