@@ -269,7 +269,7 @@ public class CapabilityConnectableLink implements IConnectableLink, INBTSerializ
     }
   }
 
-  public ItemStack extractFromSlot(int slot, int amount) {
+  public ItemStack extractFromSlot(int slot, int amount, boolean simulate) {
     DimPos inventoryPos = connectable.getPos().offset(inventoryFace);
     // Test whether the connected block has the IItemHandler capability
     IItemHandler itemHandler = inventoryPos.getCapability(CapabilityItemHandler.ITEM_HANDLER_CAPABILITY,
@@ -277,7 +277,7 @@ public class CapabilityConnectableLink implements IConnectableLink, INBTSerializ
     if (itemHandler == null) {
       return ItemStack.EMPTY;
     }
-    return itemHandler.extractItem(slot, amount, false);
+    return itemHandler.extractItem(slot, amount, simulate);
   }
 
   public void addToStackProviderBatch(StackProviderBatch availableItems) {

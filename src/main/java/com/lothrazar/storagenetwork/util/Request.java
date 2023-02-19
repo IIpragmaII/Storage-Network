@@ -1,6 +1,7 @@
 package com.lothrazar.storagenetwork.util;
 
 import com.lothrazar.storagenetwork.api.IConnectableItemAutoIO;
+import com.lothrazar.storagenetwork.api.IConnectableLink;
 
 import net.minecraft.world.item.ItemStack;
 
@@ -21,22 +22,32 @@ public class Request {
         return count;
     }
 
-    public Boolean insertStack(ItemStack stack) {
-        if (stack.isEmpty()) {
+    public Boolean insertStack(IConnectableLink providerStorage, int slot) {
+        ItemStack simulatedExtractedStack = providerStorage.extractFromSlot(slot, getCount(), true);
+
+        if (simulatedExtractedStack.isEmpty()) {
             return false;
         }
 
-        ItemStack insertedStack = storage.insertStack(stack, false);
+        int movedItems = 0;
+        ItemStack simulatedInsertedStack = storage.insertStack(simulatedExtractedStack, true);
+        if (simulatedInsertedStack.isEmpty()) {
+            movedItems = getCount();
+            setCount(0);
+        } else {
+            movedItems = simulatedExtractedStack.getCount() - simulatedInsertedStack.getCount();
+            setCount(movedItems);
+        }
+
+        // real extraction
+
+        ItemStack realExtractedStack = providerStorage.extractFromSlot(slot, movedItems, false);
+        storage.insertStack(realExtractedStack, false);
+
         // Determine the amount of items moved in the stack
-        int movedItems = stack.getCount() - insertedStack.getCount();
-        if (movedItems <= 0) {
-            return false;
+        if (getCount() == 0) {
+            return true;
         }
-        setCount(movedItems);
-        stack.setCount(movedItems);
-        if (stack.isEmpty()) {
-            return false;
-        }
-        return true;
+        return false;
     }
 }

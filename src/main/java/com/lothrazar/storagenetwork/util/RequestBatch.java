@@ -13,10 +13,10 @@ public class RequestBatch extends Batch<Request> {
         List<Request> requests = get(item);
         List<Request> remainingRequests = new ArrayList<Request>();
         for (Request request : requests) {
-            ItemStack stack = providerStorage.extractFromSlot(slot, request.getCount());
-            if (!request.insertStack(stack)) {
+            if (!request.insertStack(providerStorage, slot)) {
                 remainingRequests.add(request);
             }
+            ItemStack stack = providerStorage.extractFromSlot(slot, 1, true);
             if (stack.isEmpty()) {
                 return;
             }
