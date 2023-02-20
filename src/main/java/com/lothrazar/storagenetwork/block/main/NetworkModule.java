@@ -334,7 +334,7 @@ public class NetworkModule {
     while (iter.hasNext()) {
       p = iter.next();
       bl = p.getBlockState().getBlock();
-      // getTranslatedName client only thanks mojang lol
+      //getTranslatedName client only thanks mojang lol
       blockName = (new TranslatableComponent(bl.getDescriptionId())).getString();
       int count = mapNamesToCount.get(blockName) != null ? (mapNamesToCount.get(blockName) + 1) : 1;
       mapNamesToCount.put(blockName, count);
@@ -354,8 +354,7 @@ public class NetworkModule {
   }
 
   /***
-   * scary recursive stuff. the big mess that keeps the network connected and
-   * updated in real time
+   * scary recursive stuff. the big mess that keeps the network connected and updated in real time
    */
   private void addConnectables(DimPos sourcePos, Set<DimPos> set, DimPos masterPos) {
     if (sourcePos == null || sourcePos.getWorld() == null || !sourcePos.isLoaded()) {
@@ -371,7 +370,7 @@ public class NetworkModule {
       if (chunk == null) {
         continue;
       }
-      // Prevent having multiple on a network and break all others.
+      // Prevent having multiple  on a network and break all others.
       TileMain maybeMain = lookPos.getTileEntity(TileMain.class);
       if (maybeMain != null && !lookPos.equals(masterPos.getWorld(), masterPos.getBlockPos())) {
         UtilInventory.nukeAndDrop(lookPos);
@@ -381,8 +380,7 @@ public class NetworkModule {
       if (tileHere == null) {
         continue;
       }
-      IConnectable capabilityConnectable = tileHere
-          .getCapability(StorageNetworkCapabilities.CONNECTABLE_CAPABILITY, direction.getOpposite()).orElse(null);
+      IConnectable capabilityConnectable = tileHere.getCapability(StorageNetworkCapabilities.CONNECTABLE_CAPABILITY, direction.getOpposite()).orElse(null);
       if (capabilityConnectable == null) {
         continue;
       }
@@ -412,15 +410,14 @@ public class NetworkModule {
     try {
       Set<IConnectableLink> storage = getConnectableStorage();
       Stream<IConnectableLink> stream = storage.stream();
-      List<IConnectableLink> sorted = stream.sorted(Comparator.comparingInt(IConnectableLink::getPriority))
-          .collect(Collectors.toList());
+      List<IConnectableLink> sorted = stream.sorted(Comparator.comparingInt(IConnectableLink::getPriority)).collect(Collectors.toList());
       return sorted;
-    } catch (Exception e) {
-      // trying to avoid
-      // java.lang.StackOverflowError: Ticking block entity
-      // and similar issues
-      StorageNetworkMod.LOGGER
-          .error("Error: network get sorted by priority error, some network components are disconnected ", e);
+    }
+    catch (Exception e) {
+      //trying to avoid 
+      //java.lang.StackOverflowError: Ticking block entity
+      //and similar issues
+      StorageNetworkMod.LOGGER.error("Error: network get sorted by priority error, some network components are disconnected ", e);
       return new ArrayList<>();
     }
   }
@@ -436,8 +433,7 @@ public class NetworkModule {
       if (tileEntity == null) {
         continue;
       }
-      IConnectableLink capConnect = tileEntity
-          .getCapability(StorageNetworkCapabilities.CONNECTABLE_ITEM_STORAGE_CAPABILITY, null).orElse(null);
+      IConnectableLink capConnect = tileEntity.getCapability(StorageNetworkCapabilities.CONNECTABLE_ITEM_STORAGE_CAPABILITY, null).orElse(null);
       if (capConnect == null) {
         continue;
       }
@@ -447,13 +443,12 @@ public class NetworkModule {
   }
 
   /**
-   * This is a recursively called method that traverses all connectable blocks and
-   * stores them in this tiles connectables list.
+   * This is a recursively called method that traverses all connectable blocks and stores them in this tiles connectables list.
    *
    * used by refresh
    *
    * @param sourcePos
-   *                  of main tile
+   *          of main tile
    */
   private Set<DimPos> getConnectables(DimPos masterPos) {
     HashSet<DimPos> result = new HashSet<>();
