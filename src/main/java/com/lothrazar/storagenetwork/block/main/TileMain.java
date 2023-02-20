@@ -185,7 +185,7 @@ public class TileMain extends BlockEntity {
    */
   private void updateExports() {
     Set<IConnectable> conSet = nw.getConnectables();
-    RequestBatch requstBatch = new RequestBatch();
+    RequestBatch requestBatch = new RequestBatch();
 
     for (IConnectable connectable : conSet) {
       if (connectable == null || connectable.getPos() == null) {
@@ -248,10 +248,10 @@ public class TileMain extends BlockEntity {
           // either the thing is empty or we are requesting none
           continue;
         }
-        requstBatch.put(matcher.getStack().getItem(), request);
+        requestBatch.put(matcher.getStack().getItem(), request);
       }
     }
-    executeRequestBatch(requstBatch);
+    executeRequestBatch(requestBatch);
   }
 
   public static void clientTick(Level level, BlockPos blockPos, BlockState blockState, TileMain tile) {}
