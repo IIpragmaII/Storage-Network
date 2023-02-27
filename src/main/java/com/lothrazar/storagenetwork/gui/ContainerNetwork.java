@@ -9,6 +9,8 @@ import com.lothrazar.storagenetwork.block.main.TileMain;
 import com.lothrazar.storagenetwork.capability.handler.ItemStackMatcher;
 import com.lothrazar.storagenetwork.network.StackRefreshClientMessage;
 import com.lothrazar.storagenetwork.registry.PacketRegistry;
+import com.lothrazar.storagenetwork.util.StackProviderBatch;
+
 import net.minecraft.core.NonNullList;
 import net.minecraft.network.protocol.game.ClientboundContainerSetSlotPacket;
 import net.minecraft.server.level.ServerPlayer;
@@ -191,6 +193,7 @@ public abstract class ContainerNetwork extends AbstractContainerMenu {
     if (!this.isCrafting() || matrix == null || tile == null) {
       return;
     }
+    StackProviderBatch availableItems = tile.getAvailableItems();
     recipeCurrent = null;
     this.findMatchingRecipeClient(player.level, this.matrix, this.resultInventory);
     if (recipeCurrent == null) {
@@ -259,33 +262,32 @@ public abstract class ContainerNetwork extends AbstractContainerMenu {
               player.drop(remainderCurrent, false);
             }
           }
-        }
-        else if (!slot.isEmpty()) {
+        } else if (!slot.isEmpty()) {
           this.matrix.removeItem(i, 1);
           slot = this.matrix.getItem(i);
         }
-      } //end loop on remiainder
-      //END onTake redo
+      } // end loop on remiainder
+      // END onTake redo
       crafted += sizePerCraft;
       ItemStack stackInSlot;
       ItemStack recipeStack;
       ItemStackMatcher itemStackMatcherCurrent;
       for (int i = 0; i < matrix.getContainerSize(); i++) {
         stackInSlot = matrix.getItem(i);
-        if (stackInSlot.isEmpty()) {
-          recipeStack = recipeCopy.get(i);
+        recipeStack = recipeCopy.get(i);
+        if (stackInSlot.isEmpty() && !recipeStack.isEmpty()) {
           //////////////// booleans are meta, ore(?ignored?), nbt
-          itemStackMatcherCurrent = !recipeStack.isEmpty() ? new ItemStackMatcher(recipeStack, false, false) : null;
-          //false here means dont simulate
-          ItemStack req = tile.request(itemStackMatcherCurrent, 1, false);
-          matrix.setItem(i, req);
+          itemStackMatcherCurrent = new ItemStackMatcher(recipeStack, false, false);
+          // false here means dont simulate
+          ItemStack stack = availableItems.extractOne(itemStackMatcherCurrent.getStack().getItem());
+          matrix.setItem(i, stack);
         }
       }
       slotsChanged(matrix);
     }
     broadcastChanges();
     this.recipeLocked = false;
-    //update recipe again in case remnants left : IE hammer and such
+    // update recipe again in case remnants left : IE hammer and such
     this.slotsChanged(this.matrix);
   }
 }

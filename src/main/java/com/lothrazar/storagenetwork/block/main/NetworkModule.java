@@ -307,11 +307,7 @@ public class NetworkModule {
   }
 
   public void executeRequestBatch(RequestBatch batch) {
-    StackProviderBatch availableItems = new StackProviderBatch();
-    for (IConnectableLink storage : getSortedConnectableStorage()) {
-      storage.addToStackProviderBatch(availableItems);
-    }
-
+    StackProviderBatch availableItems = getAvailableItems();
     for (Item item : batch.keySet()) {
       List<StackProvider> availableStacks = availableItems.get(item);
       if (availableStacks != null) {
@@ -320,6 +316,14 @@ public class NetworkModule {
         }
       }
     }
+  }
+
+  public StackProviderBatch getAvailableItems() {
+    StackProviderBatch availableItems = new StackProviderBatch();
+    for (IConnectableLink storage : getSortedConnectableStorage()) {
+      storage.addToStackProviderBatch(availableItems);
+    }
+    return availableItems;
   }
 
   /**

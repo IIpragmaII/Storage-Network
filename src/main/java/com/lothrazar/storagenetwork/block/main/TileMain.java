@@ -13,6 +13,7 @@ import com.lothrazar.storagenetwork.registry.SsnRegistry;
 import com.lothrazar.storagenetwork.registry.StorageNetworkCapabilities;
 import com.lothrazar.storagenetwork.util.Request;
 import com.lothrazar.storagenetwork.util.RequestBatch;
+import com.lothrazar.storagenetwork.util.StackProviderBatch;
 import com.lothrazar.storagenetwork.util.UtilInventory;
 import net.minecraft.core.BlockPos;
 import net.minecraft.nbt.CompoundTag;
@@ -69,6 +70,10 @@ public class TileMain extends BlockEntity {
     ItemStack result = nw.request(matcher, size, simulate);
     //if not found then ?
     return result;
+  }
+
+  public StackProviderBatch getAvailableItems() {
+    return nw.getAvailableItems();
   }
 
   public void executeRequestBatch(RequestBatch batch) {
