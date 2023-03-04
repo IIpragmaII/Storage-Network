@@ -9,6 +9,9 @@ import net.minecraft.world.item.ItemStack;
 public class StackProviderBatch extends Batch<StackProvider> {
     public ItemStack extractOne(Item item) {
         List<StackProvider> availableStacks = get(item);
+        if (availableStacks == null) {
+            return ItemStack.EMPTY;
+        }
         List<StackProvider> availableWithoutEmpty = new ArrayList<StackProvider>(availableStacks);
         ItemStack extractedStack = ItemStack.EMPTY;
         for (StackProvider stackProvider : availableStacks) {
